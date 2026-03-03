@@ -17,12 +17,12 @@ Write-Host "--------------------------------"
 $opcion = Read-Host "Selecciona una opcion (1-4)"
 
 switch ($opcion) {
-    "1" { irm ($base + "autofirma.txt") | iex }
-    "2" { irm ($base + "seb.txt") | iex }
+    "1" { irm ($base + "autofirma.ps1") | iex }
+    "2" { irm ($base + "seb.ps1") | iex }
     "3" { 
         Write-Host "Iniciando instalacion completa..." -ForegroundColor Yellow
         irm ($base + "autofirma.ps1") | iex
-        irm ($base + "seb.txt") | iex
+        irm ($base + "seb.ps1") | iex
     }
     "4" { exit }
     default { Write-Host "Opcion no valida" -ForegroundColor Red }
