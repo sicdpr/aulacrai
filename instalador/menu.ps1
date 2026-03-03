@@ -2,7 +2,7 @@
 # Usuario: sicdpr
 
 # URL fija de tu repositorio en GitHub Pages
-$base = "https://sicdpr.github.io/aulacrai/scripts/"
+$base = "https://sicdpr.github.io/aulacrai/instalador/"
 
 Clear-Host
 Write-Host "================================" -ForegroundColor Cyan
