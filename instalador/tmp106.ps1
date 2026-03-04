@@ -2,7 +2,7 @@ Write-Host "Iniciando instalación combinada (AutoFirma + Google Earth Pro)..." 
 
 # 1. Instalación de AutoFirma
 Write-Host "1/2 Instalando AutoFirma..." -ForegroundColor Cyan
-winget install --id Firma.AutoFirma --silent --accept-package-agreements --accept-source-agreements
+winget install --id SpanishGovernment.Autofirma --silent --accept-package-agreements --accept-source-agreements
 
 # 2. Instalación de Google Earth Pro
 Write-Host "2/2 Instalando Google Earth Pro..." -ForegroundColor Cyan
@@ -13,3 +13,4 @@ if ($LASTEXITCODE -eq 0) {
 } else {
     Write-Host "El proceso finalizó, pero algunas instalaciones podrían haber fallado." -ForegroundColor Red
 }
+
