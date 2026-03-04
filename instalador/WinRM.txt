@@ -1,0 +1,84 @@
+
+	Habilitar WinRM con PsExec
+	--------------------------
+
+	Desde un terminal con privilegios de administrador, podrías ejecutar:
+
+		psexec @lista_pcs_aula.txt -s powershell.exe "Enable-PSRemoting -Force"
+	
+	-s: Ejecuta como sistema (System).
+	@lista_pcs_aula.txt: Un archivo .txt con un nombre de equipo por línea.
+
+
+
+
+
+
+
+	Verificación rápida
+	-------------------
+
+	Una vez aplicada la configuración, puedes testear si un equipo responde desde tu puesto de trabajo con:
+
+		Test-WsMan -ComputerName NOMBRE_DEL_PC
+
+	Si devuelve la versión del stack de WinRM, ya puedes lanzar tus scripts de instalación con Invoke-Command
+	
+	
+	
+	
+	
+	
+	
+	Ejecutcion de comandos remotos en PCs
+	-------------------------------------
+	
+	
+	
+# 1. Definir rutas y comando
+$urlListaPCs = "https://sicdpr.github.io/aulacrai/instalador/aulas/CRAI106.txt"
+$comandoInstalacion = "irm aulacrai.sicdpr.workers.dev/tmp106.ps1 | iex"
+
+# 2. Habilitar ejecución local para este proceso
+Set-ExecutionPolicy Bypass -Scope Process -Force
+
+try {
+    Write-Host "--- Obteniendo lista de equipos para CRAI106 ---" -ForegroundColor Yellow
+    
+    # Descargar y limpiar la lista de equipos
+    $data = Invoke-RestMethod -Uri $urlListaPCs
+    $equipos = $data -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" }
+
+    if (-not $equipos) {
+        Write-Error "No se han encontrado equipos en la lista."
+        return
+    }
+
+    Write-Host "Se han cargado $($equipos.Count) equipos. Iniciando ejecución remota..." -ForegroundColor Cyan
+
+    # 3. Ejecución masiva por WinRM
+    Invoke-Command -ComputerName $equipos -ScriptBlock {
+        param($cmd)
+        try {
+            # Deshabilitar restricciones en el equipo remoto para esta sesión
+            Set-ExecutionPolicy Bypass -Scope Process -Force
+            
+            $pc = $env:COMPUTERNAME
+            Write-Host "[ $pc ] Lanzando instalador..." -ForegroundColor Yellow
+            
+            # Ejecutar la instrucción solicitada
+            Invoke-Expression $cmd
+            
+            Write-Host "[ $pc ] Completado con éxito." -ForegroundColor Green
+        }
+        catch {
+            Write-Host "[ $env:COMPUTERNAME ] ERROR: $($_.Exception.Message)" -ForegroundColor Red
+        }
+    } -ArgumentList $comandoInstalacion -ThrottleLimit 10
+
+}
+catch {
+    Write-Error "Error de conexión: $($_.Exception.Message)"
+}
+
+	
